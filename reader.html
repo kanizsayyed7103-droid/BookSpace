@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html> -->
 <html lang="en">
 
 <head>
@@ -183,6 +183,53 @@
             </div>
         </div>
     </div>
+    <!-- <script>
+    // Get book id from URL (example: reader.html?id=2)
+    const urlParams = new URLSearchParams(window.location.search);
+    const bookId = urlParams.get("id");
+
+    if (!bookId) {
+      document.getElementById("reader-container").innerHTML =
+        "<p>No book selected.</p>";
+    } else {
+      fetch("api/books.php")
+        .then(res => res.json())
+        .then(books => {
+          const book = books.find(b => b.id === bookId);
+          if (book) {
+            document.getElementById("reader-container").innerHTML = `
+              <h2>${book.title}</h2>
+              <p><strong>Author:</strong> ${book.author}</p>
+              <p><strong>Rating:</strong> ⭐ ${book.rating}</p>
+              <img src="${book.cover}" alt="${book.title}" class="reader-cover">
+              <p><em>(Here you can load book content later)</em></p>
+            `;
+          } else {
+            document.getElementById("reader-container").innerHTML =
+              "<p>Book not found.</p>";
+          }
+        })
+        .catch(err => console.error("Error fetching book:", err));
+    }
+  </script> -->
+  <script>
+  const params = new URLSearchParams(window.location.search);
+const id = params.get('id');
+if (id) {
+  fetch(`api/books.php?id=${id}`)
+    .then(r => r.json())
+    .then(b => {
+      if (b.error) { document.getElementById('bookContent').textContent = 'Not found'; return; }
+      document.getElementById('bookContent').innerHTML = `
+        <h1>${escapeHtml(b.title)}</h1>
+        <h3>${escapeHtml(b.author)}</h3>
+        <img src="${b.cover || 'default.jpg'}">
+        <div>${b.content ? escapeHtml(b.content) : '<em>No inline content</em>'}</div>
+        ${b.file_url ? `<a href="${b.file_url}" target="_blank">Download</a>` : ''}
+      `;
+    });
+}
+</script>
 </body>
 
-</html>
+</html> 
