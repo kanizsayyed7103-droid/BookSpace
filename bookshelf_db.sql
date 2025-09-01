@@ -2,12 +2,14 @@ CREATE DATABASE IF NOT EXISTS bookspace;
 
 USE bookspace;
 
-CREATE TABLE IF NOT EXISTS bookshelf (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  title VARCHAR(255) NOT NULL,
-  author VARCHAR(255) NOT NULL,
-  rating DECIMAL(2,1) DEFAULT NULL,
-  cover VARCHAR(500) DEFAULT NULL
+=======
+CREATE TABLE bookshelf (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    author VARCHAR(255) NOT NULL,
+    rating FLOAT NOT NULL,
+    cover VARCHAR(500) NOT NULL
+>>>>>>> 2979d83799b1eedbac46a429b24aa660748270db
 );
 
 INSERT INTO bookshelf (title, author, rating, cover) VALUES

@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
     <title>BookSpace</title>
     <link rel="stylesheet" href="reader.css">
 </head>
@@ -12,6 +15,7 @@
     
     <!-- Header -->
     <div class="header">
+        <?php session_start();  echo $_SESSION['role'] ?>
         <div class="logo">
             <img src="logo.JPEG" .png" alt="BookSpace Logo">
         </div>
@@ -21,12 +25,11 @@
         <div class="profile">👤 Profile</div>
     </div>
 
-    <!-- Tabs -->
      <header>
     </div>
   <nav>
   <ul>
-    <li><a href="reader.html">Home</a></li>
+    <li><a href="reader_dashboard.php">Home</a></li>
     <li><a href="bookshelf.html">Bookshelf</a></li>
     <li><a href="cost.html">Cost</a></li>
     <li><a href="contact.html">Contact</a></li>
@@ -39,9 +42,7 @@
     </div>
     </header>
 
-    <!-- Books -->
     <div class="books">
-        <!-- Fiction Books -->
         <div class="book-card">
             <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1733931824i/221228045.jpg"
                 alt="Book Cover">
@@ -115,7 +116,6 @@
             </div>
         </div>
 
-        <!-- Non-fiction (kept some from before) -->
         <div class="book-card">
             <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1733011568i/220458659.jpg"
                 alt="Book Cover">
@@ -138,7 +138,6 @@
             </div>
         </div>
 
-        <!-- Horror Books -->
         <div class="book-card">
             <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1733505329i/219542937.jpg"
                 alt="Book Cover">
@@ -160,7 +159,6 @@
                 <a href="#" class="btn">✨ AI Summary</a>
             </div>
         </div>
-        <!-- Poetry Books -->
         <div class="book-card">
             <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1754601023i/239873580.jpg"
                 alt="Book Cover">

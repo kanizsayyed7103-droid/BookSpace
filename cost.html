@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BookSpace | Cost</title>
+  <link rel="stylesheet" href="reader.css"> <!-- reuse your existing CSS -->
+  <style>
+    /* Extra CSS just for pricing section */
+    .pricing-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 40px;
+    }
+
+    .plan-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      padding: 30px;
+      width: 280px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .plan-card:hover {
+      transform: translateY(-8px);
+    }
+
+    .plan-title {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #3a2d5c; /* deep purple */
+    }
+
+    .plan-price {
+      font-size: 1.8em;
+      margin: 15px 0;
+      color: #51407d; /* highlight */
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0;
+    }
+
+    ul li {
+      margin: 10px 0;
+      font-size: 0.95em;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      border: none;
+      background: #3a2d5c;
+      color: white;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      background: #51407d;
+    }
+
+    .highlight {
+      border: 3px solid #fbc2eb;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+    
+    <!-- Header -->
+    <div class="header">
+        <?php session_start();  echo $_SESSION['role'] ?>
+        <div class="logo">
+            <img src="logo.JPEG" alt="BookSpace Logo">
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search books...">
+        </div>
+        <div class="profile">👤 Profile</div>
+    </div>
+
+    <header>
+      <nav>
+        <ul>
+          <li><a href="reader_dashboard.php">Home</a></li>
+          <li><a href="bookshelf.html">Bookshelf</a></li>
+          <li><a href="cost.html" class="active">Cost</a></li> <!-- highlight current page -->
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="chatbot.html">AI Chatbot</a></li>
+          <li><a href="authors.html">Authors</a></li>
+        </ul>
+      </nav>
+      <div class="menu">
+        <span class="more">☰</span>
+      </div>
+    </header>
+
+    <!-- Pricing Section -->
+    <section class="pricing-container">
+      <!-- Free Plan -->
+      <div class="plan-card">
+        <div class="plan-title">📖 Reader</div>
+        <div class="plan-price">Free</div>
+        <ul>
+          <li>✔ 5 AI Summaries / month</li>
+          <li>✔ Limited Book Access</li>
+          <li>❌ No AI Chatbot</li>
+          <li>❌ No Author Insights</li>
+        </ul>
+        <a href="#" class="btn">Get Started</a>
+      </div>
+
+      <!-- Standard Plan -->
+      <div class="plan-card highlight">
+        <div class="plan-title">❤️ Book Lover</div>
+        <div class="plan-price">₹199 / month</div>
+        <ul>
+          <li>✔ 50 AI Summaries / month</li>
+          <li>✔ Full Bookshelf Access</li>
+          <li>✔ AI Chatbot Access</li>
+          <li>❌ No Priority Support</li>
+        </ul>
+        <a href="#" class="btn">Subscribe</a>
+      </div>
+
+      <!-- Premium Plan -->
+      <div class="plan-card">
+        <div class="plan-title">📚 Library Master</div>
+        <div class="plan-price">₹399 / month</div>
+        <ul>
+          <li>✔ Unlimited AI Summaries</li>
+          <li>✔ All Books Unlocked</li>
+          <li>✔ AI Chatbot + Author Insights</li>
+          <li>✔ Priority Support</li>
+        </ul>
+        <a href="#" class="btn">Go Premium</a>
+      </div>
+    </section>
+
+</body>
+</html>
