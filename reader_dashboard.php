@@ -31,7 +31,7 @@ session_start();
 
     <!-- Profile -->
     <div class="profile">
-      <img src="profile.jpg" alt="Profile">
+      <img src="kaniz.jpg" alt="Profile">
       <p>Welcome, <b><?php echo $_SESSION['role'] ?? 'Reader'; ?></b></p>
     </div>
 
