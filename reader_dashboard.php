@@ -1,233 +1,79 @@
-<!-- <!DOCTYPE html> -->
+<!DOCTYPE html>
 <html lang="en">
+<?php
+$q = urlencode($_POST['search'] ?? 'harry potter');  // search query
+$key = 'AIzaSyCOCuStWqupRkpuhuYgeG4tqGYUDIsizns';    // Google API key
+$url = "https://www.googleapis.com/books/v1/volumes?q={$q}&key={$key}&maxResults=10";
 
+$json = file_get_contents($url);
+$data = json_decode($json, true);
+session_start();
+?>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
-    <title>BookSpace</title>
-    <link rel="stylesheet" href="reader.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BookSpace</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="reader.css">
 </head>
-
 <body>
-    
-    <!-- Header -->
-    <div class="header">
-        <?php session_start();  echo $_SESSION['role'] ?>
-        <div class="logo">
-            <img src="logo.JPEG" .png" alt="BookSpace Logo">
-        </div>
-        <div class="search-bar">
-            <input type="text" placeholder="Search books...">
-        </div>
-        <div class="profile">👤 Profile</div>
+
+  <!-- Sidebar -->
+  <div class="sidebar d-flex flex-column">
+    <!-- Logo -->
+    <div class="logo">
+      <img src="logo.JPEG" alt="BookSpace Logo">
+      <h4>bookSpace</h4>
     </div>
 
-     <header>
+    <!-- Profile -->
+    <div class="profile">
+      <img src="profile.jpg" alt="Profile">
+      <p>Welcome, <b><?php echo $_SESSION['role'] ?? 'Reader'; ?></b></p>
     </div>
-  <nav>
-  <ul>
-    <li><a href="reader_dashboard.php">Home</a></li>
-    <li><a href="bookshelf.html">Bookshelf</a></li>
-    <li><a href="cost.html">Cost</a></li>
-    <li><a href="contact.html">Contact</a></li>
-    <li><a href="chatbot.html">AI Chatbot</a></li>
-    <li><a href="authors.html">Authors</a></li>
-  </ul>
-</nav>
-    <div class="menu">
-      <span class="more">☰</span>
+
+    <!-- Search -->
+    <form action="reader_dashboard.php" method="post" class="mb-3">
+      <input type="text" class="form-control" name="search" placeholder="Search books...">
+    </form>
+
+    <!-- Navigation -->
+    <ul class="nav flex-column mb-auto">
+      <li class="nav-item"><a href="reader_dashboard.php" class="nav-link">Dashboard</a></li>
+      <li><a href="bookshelf.html" class="nav-link">Bookshelf</a></li>
+      <li><a href="cost.html" class="nav-link">Cost</a></li>
+      <li><a href="contact.html" class="nav-link">Contact</a></li>
+      <li><a href="chatbot.html" class="nav-link">AI Chatbot</a></li>
+      <li><a href="authors.html" class="nav-link">Authors</a></li>
+    </ul>
+
+    <!-- Logout -->
+    <button class="btn btn-logout mt-3">LOGOUT</button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="books d-flex flex-wrap gap-3">
+      <?php
+      if (!empty($data['items']))  foreach ($data['items'] as $item): ?>
+        <div class="card" style="width: 14rem;">
+          <img src="<?php echo $item['volumeInfo']['imageLinks']['thumbnail'] ?? 'https://via.placeholder.com/150'; ?>" 
+               class="card-img-top" alt="Book Cover">
+          <div class="card-body">
+            <h5 class="card-title"><?php echo $item['volumeInfo']['title'] ?? 'No Title'; ?></h5>
+            <p class="card-text"><?php echo isset($item['volumeInfo']['authors']) ? implode(', ', $item['volumeInfo']['authors']) : 'Unknown Author'; ?></p>
+            <p class="text-warning">⭐ <?php echo $item['volumeInfo']['averageRating'] ?? 'N/A'; ?></p>
+            <a href="<?php echo $item['volumeInfo']['infoLink'] ?? '#'; ?>" class="btn btn-primary btn-sm">✨ AI Summary</a>
+          </div>
+        </div>
+      <?php endforeach; ?>
     </div>
-    </header>
+  </div>
 
-    <div class="books">
-        <div class="book-card">
-            <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1733931824i/221228045.jpg"
-                alt="Book Cover">
-            <div class="book-info">
-                <h3>A Study in Drowning #2
-                    A Theory of Dreaming</h3>
-                <p>Ava Reid
-                </p>
-                <div class="rating">⭐ 3.84</div>
-                <a href="#" class="btn">✨ AI Summary</a>
-            </div>
-        </div>
-
-        <div class="book-card">
-            <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1541428344i/17165596.jpg"
-                alt="Book Cover">
-            <div class="book-info">
-                <h3>The Kite Runner</h3>
-                <p>Khaled Hosseini</p>
-                <div class="rating">⭐ 4.35</div>
-                <a href="#" class="btn">✨ AI Summary</a>
-            </div>
-        </div>
-
-        <div class="book-card">
-            <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1733355498i/221955020.jpg"
-                alt="Book Cover">
-            <div class="book-info">
-                <h3>The Souls of Blackwood Academy #1
-                    Immortal Consequences</h3>
-                <p>I.V. Marie</p>
-                <div class="rating">⭐ 3.98</div>
-                <a href="#" class="btn">✨ AI Summary</a>
-            </div>
-        </div>
-
-        <div class="book-card">
-            <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1598823299i/42844155.jpg"
-                alt="Book Cover">
-            <div class="book-info">
-                <h3>Harry Potter #1
-                    Harry Potter and the Philosopher’s Stone</h3>
-                <p>J.K. Rowling,
-                    Olly Moss
-                    (Illustrator)</p>
-                <div class="rating">⭐ 4.47</div>
-                <a href="#" class="btn">✨ AI Summary</a>
-            </div>
-        </div>
-
-        <div class="book-card">
-            <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1388800064i/9648068.jpg"
-                alt="Book Cover">
-            <div class="book-info">
-                <h3>As the World Dies #1
-                    The First Days</h3>
-                <p>Rhiannon Frater</p>
-                <div class="rating">⭐ 3.77</div>
-                <a href="#" class="btn">✨ AI Summary</a>
-            </div>
-        </div>
-
-        <div class="book-card">
-            <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1442161289i/6642715.jpg"
-                alt="Book Cover">
-            <div class="book-info">
-                <h3>The Forty Rules of Love</h3>
-                <p>Elif Shafak</p>
-                <div class="rating">⭐ 4.11</div>
-                <a href="#" class="btn">✨ AI Summary</a>
-            </div>
-        </div>
-
-        <div class="book-card">
-            <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1733011568i/220458659.jpg"
-                alt="Book Cover">
-            <div class="book-info">
-                <h3>Midnight on the Potomac</h3>
-                <p>Scott Ellsworth</p>
-                <div class="rating">⭐ 4.27</div>
-                <a href="#" class="btn">✨ AI Summary</a>
-            </div>
-        </div>
-
-        <div class="book-card">
-            <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1731044766i/218372291.jpg"
-                alt="Book Cover">
-            <div class="book-info">
-                <h3>The Lost Peace</h3>
-                <p>Jay Winik</p>
-                <div class="rating">⭐ 4.24</div>
-                <a href="#" class="btn">✨ AI Summary</a>
-            </div>
-        </div>
-
-        <div class="book-card">
-            <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1733505329i/219542937.jpg"
-                alt="Book Cover">
-            <div class="book-info">
-                <h3>It Was Her House First</h3>
-                <p>Cherie Priest</p>
-                <div class="rating">⭐ 3.87</div>
-                <a href="#" class="btn">✨ AI Summary</a>
-            </div>
-        </div>
-
-        <div class="book-card">
-            <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1729088211i/220161280.jpg"
-                alt="Book Cover">
-            <div class="book-info">
-                <h3>Dead of Summer</h3>
-                <p>Jessa Maxwell</p>
-                <div class="rating">⭐ 3.50</div>
-                <a href="#" class="btn">✨ AI Summary</a>
-            </div>
-        </div>
-        <div class="book-card">
-            <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1754601023i/239873580.jpg"
-                alt="Book Cover">
-            <div class="book-info">
-                <h3>Dwarf Stars Anthology</h3>
-                <p>Miguel O. Mitchell</p>
-                <div class="rating">⭐ 4.80</div>
-                <a href="#" class="btn">✨ AI Summary</a>
-            </div>
-        </div>
-
-        <div class="book-card">
-            <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1652446760i/61085371.jpg"
-                alt="Book Cover">
-            <div class="book-info">
-                <h3>Rhysling Anthology</h3>
-                <p>F. J. Bergmann and Brian U. Garrison</p>
-                <div class="rating">⭐ 4.50</div>
-                <a href="#" class="btn">✨ AI Summary</a>
-            </div>
-        </div>
-    </div>
-    <!-- <script>
-    // Get book id from URL (example: reader.html?id=2)
-    const urlParams = new URLSearchParams(window.location.search);
-    const bookId = urlParams.get("id");
-
-    if (!bookId) {
-      document.getElementById("reader-container").innerHTML =
-        "<p>No book selected.</p>";
-    } else {
-      fetch("api/books.php")
-        .then(res => res.json())
-        .then(books => {
-          const book = books.find(b => b.id === bookId);
-          if (book) {
-            document.getElementById("reader-container").innerHTML = `
-              <h2>${book.title}</h2>
-              <p><strong>Author:</strong> ${book.author}</p>
-              <p><strong>Rating:</strong> ⭐ ${book.rating}</p>
-              <img src="${book.cover}" alt="${book.title}" class="reader-cover">
-              <p><em>(Here you can load book content later)</em></p>
-            `;
-          } else {
-            document.getElementById("reader-container").innerHTML =
-              "<p>Book not found.</p>";
-          }
-        })
-        .catch(err => console.error("Error fetching book:", err));
-    }
-  </script> -->
-  <script>
-  const params = new URLSearchParams(window.location.search);
-const id = params.get('id');
-if (id) {
-  fetch(`api/books.php?id=${id}`)
-    .then(r => r.json())
-    .then(b => {
-      if (b.error) { document.getElementById('bookContent').textContent = 'Not found'; return; }
-      document.getElementById('bookContent').innerHTML = `
-        <h1>${escapeHtml(b.title)}</h1>
-        <h3>${escapeHtml(b.author)}</h3>
-        <img src="${b.cover || 'default.jpg'}">
-        <div>${b.content ? escapeHtml(b.content) : '<em>No inline content</em>'}</div>
-        ${b.file_url ? `<a href="${b.file_url}" target="_blank">Download</a>` : ''}
-      `;
-    });
-}
-</script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
-</html> 
+</html>

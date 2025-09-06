@@ -10,5 +10,10 @@ CREATE TABLE users (
     last_name VARCHAR(50),
     creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
 
+<<<<<<< HEAD
    ALTER TABLE users 
 ADD profile_image VARCHAR(255) ;
+=======
+    ALTER TABLE users
+ADD COLUMN profile_image VARCHAR(255) NULL DEFAULT NULL;
+>>>>>>> 9780395e9e361dbdc6a06f21cd28764e5af97aac
