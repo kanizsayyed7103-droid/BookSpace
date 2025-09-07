@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 // If GET request (Fetch Books)
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
-    $result = $conn->query("SELECT * FROM books ORDER BY id DESC");
+    $result = $conn->query("SELECT * FROM books ORDER BY book_id");
     $books = [];
     while ($row = $result->fetch_assoc()) {
         $books[] = $row;
