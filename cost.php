@@ -31,71 +31,6 @@
     }
 
     /* Custom styles for sidebar */
-    .sidebar {
-        width: 260px;
-        min-height: 100vh;
-        background: var(--color-deep-purple);
-        color: var(--color-light-text);
-        padding: 20px;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        position: sticky;
-        top: 0;
-    }
-
-    .sidebar .logo {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
-    .sidebar .logo img {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        margin-bottom: 10px;
-    }
-
-    .sidebar .profile {
-        text-align: center;
-        margin-bottom: 30px;
-    }
-
-    .sidebar .profile img {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        margin-bottom: 10px;
-    }
-
-    .sidebar .nav-link {
-        color: var(--color-light-text);
-        font-weight: 500;
-        padding: 10px;
-        border-radius: 8px;
-        text-decoration: none;
-    }
-
-    .sidebar .nav-link:hover {
-        background: var(--color-highlight);
-        color: #fff;
-    }
-
-    .btn-logout {
-        width: 100%;
-        background: var(--color-dusty-pink);
-        color: var(--color-deep-purple);
-        font-weight: bold;
-        border-radius: 8px;
-        border: none;
-        padding: 10px;
-        margin-top: auto;
-    }
-
-    .btn-logout:hover {
-        background: var(--color-lavender);
-        color: #fff;
-    }
 
 
     /* Main content area */
@@ -190,6 +125,8 @@
 
 <body class="flex">
     <!-- Sidebar -->
+    <?php include 'reader_sidebar.php'; ?>
+
     <div class="sidebar d-flex flex-column">
         <!-- Logo -->
         <div class="logo">
