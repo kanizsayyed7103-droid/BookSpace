@@ -140,7 +140,7 @@
                             value="<?php echo htmlspecialchars($_POST['search'] ?? ''); ?>">
                     </form>
                     <div class="profile-section me-3 d-none d-lg-flex">
-                        <img src="profile.jpg" alt="Profile">
+                        <img src="kaniz.jpg" alt="Profile">
                         <p class="mb-0">Welcome, <b><?php echo $_SESSION['role'] ?? 'Reader'; ?></b></p>
                     </div>
                     <button class="btn btn-logout">LOGOUT</button>
