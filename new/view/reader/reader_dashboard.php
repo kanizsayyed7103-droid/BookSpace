@@ -43,10 +43,7 @@ $data = json_decode($json, true);
 </head>
 
 <body>
-    <!-- <<<<<<< HEAD:reader.html -->
 
-    <!-- Header -->
-    <!-- ======= -->
     <div class="header">
         <div class="row">
             <div class="col-md-12 col-lg-1">
@@ -62,7 +59,7 @@ $data = json_decode($json, true);
                 </form>
             </div>
             <div class="col-md-12 col-lg-1">
-                <div class="profile">👤   <?php session_start();       
+                <div class="profile">👤 <?php session_start();       
                  echo $_SESSION['role'] ?> </div>
             </div>
 
@@ -103,20 +100,20 @@ $data = json_decode($json, true);
         <?php
         if (!empty($data['items']))
             foreach ($data['items'] as $item): ?>
-                <div class="book-card">
-                    <img src="<?php echo $item['volumeInfo']['imageLinks']['thumbnail'] ?? 'https://via.placeholder.com/150'; ?>"
-                        alt="Book Cover">
-                    <div class="book-info">
-                        <h3><?php echo $item['volumeInfo']['title'] ?? 'No Title'; ?></h3>
-                        <p><?php echo isset($item['volumeInfo']['authors']) ? implode(', ', $item['volumeInfo']['authors']) : 'Unknown Author'; ?>
-                        </p>
-                        <div class="rating">⭐ <?php echo $item['volumeInfo']['averageRating'] ?? 'N/A'; ?></div>
-                        <a href=" <?php echo $item['volumeInfo']['infoLink'] ?? 'N/A'; ?>" class="btn">✨ AI Summary</a>
-                        <!-- infoLink -->
-                    </div>
-                </div>
+        <div class="book-card">
+            <img src="<?php echo $item['volumeInfo']['imageLinks']['thumbnail'] ?? 'https://via.placeholder.com/150'; ?>"
+                alt="Book Cover">
+            <div class="book-info">
+                <h3><?php echo $item['volumeInfo']['title'] ?? 'No Title'; ?></h3>
+                <p><?php echo isset($item['volumeInfo']['authors']) ? implode(', ', $item['volumeInfo']['authors']) : 'Unknown Author'; ?>
+                </p>
+                <div class="rating">⭐ <?php echo $item['volumeInfo']['averageRating'] ?? 'N/A'; ?></div>
+                <a href=" <?php echo $item['volumeInfo']['infoLink'] ?? 'N/A'; ?>" class="btn">✨ AI Summary</a>
+                <!-- infoLink -->
+            </div>
+        </div>
 
-            <?php endforeach; ?>
+        <?php endforeach; ?>
         <div class="book-card">
             <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1733931824i/221228045.jpg"
                 alt="Book Cover">
