@@ -15,13 +15,10 @@
 
     <style>
     body {
-        font-family: 'Poppins', sans-serif;
-        background-color: #a18cd1;
         margin: 0;
-        padding-top: 70px;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
+        font-family: 'Poppins', sans-serif;
+        background: var(--color-lavender);
+        color: var(--color-text);
     }
 
     /* Chat Container */

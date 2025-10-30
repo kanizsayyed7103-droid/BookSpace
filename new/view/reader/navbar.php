@@ -1,3 +1,11 @@
+<?php
+// ✅ Must be at the very top, no blank lines above
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$username = $_SESSION['username'] ?? 'Reader';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,7 +20,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
     <style>
-    /* Define CSS Variables */
     :root {
         --color-deep-purple: #3a2d5c;
         --color-lavender: #a18cd1;
@@ -29,7 +36,6 @@
         padding-top: 70px;
     }
 
-    /* --- Navbar Styling --- */
     .navbar {
         background-color: var(--color-highlight);
         padding: 0.5rem 1rem;
@@ -92,11 +98,6 @@
         border: 1px solid #ddd;
     }
 
-    .profile-section b {
-        color: var(--color-light-text);
-        font-weight: 600;
-    }
-
     .btn-logout {
         background-color: var(--color-dusty-pink);
         color: var(--color-deep-purple);
@@ -121,10 +122,12 @@
                 <img src="logo.JPEG" alt="BookSpace Logo">
                 <h4>bookSpace</h4>
             </a>
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item"><a href="reader_dashboard.php" class="nav-link active">Dashboard</a></li>
@@ -132,18 +135,26 @@
                     <li class="nav-item"><a href="cost.php" class="nav-link">Cost</a></li>
                     <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
                     <li class="nav-item"><a href="chatbot.php" class="nav-link">AI Chatbot</a></li>
-                    <li class="nav-item"><a href="authors.php" class="nav-link">Authors</a></li>
+                    <!-- <li class="nav-item"><a href="authors.php" class="nav-link">Authors</a></li> -->
                 </ul>
+
                 <div class="d-flex align-items-center">
+                    <!-- Search -->
                     <form action="reader_dashboard.php" method="post" class="d-flex me-3">
                         <input type="text" class="form-control" name="search" placeholder="Search books..."
                             value="<?php echo htmlspecialchars($_POST['search'] ?? ''); ?>">
                     </form>
+
+                    <!-- Profile -->
                     <div class="profile-section me-3 d-none d-lg-flex">
                         <img src="kaniz.jpg" alt="Profile">
-                        <p class="mb-0">Welcome, <b><?php echo $_SESSION['role'] ?? 'Reader'; ?></b></p>
+                        <p class="mb-0">Welcome, <b><?php echo htmlspecialchars($username); ?></b></p>
                     </div>
-                    <button class="btn btn-logout">LOGOUT</button>
+
+                    <!-- Logout -->
+                    <form action="logout.php" method="post">
+                        <button type="submit" class="btn btn-logout">LOGOUT</button>
+                    </form>
                 </div>
             </div>
         </div>

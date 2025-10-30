@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <?php
-$q = urlencode($_POST['search'] ?? 'harry potter');  // search query
-$key = 'AIzaSyCOCuStWqupRkpuhuYgeG4tqGYUDIsizns';    // Google API key
-$url = "https://www.googleapis.com/books/v1/volumes?q={$q}&key={$key}&maxResults=10";
+$q = urlencode($_POST['search'] ?? 'harry potter'); 
+$key = 'AIzaSyCOCuStWqupRkpuhuYgeG4tqGYUDIsizns';  
+$url = "https://www.googleapis.com/books/v1/volumes?q={$q}&key={$key}&maxResults=12";
 
 $json = file_get_contents($url);
 $data = json_decode($json, true);
@@ -15,332 +15,223 @@ session_start();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BookSpace | My Bookshelf</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Cinzel+Decorative:wght@700&display=swap"
         rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
     <style>
-    /* Define CSS Variables */
     :root {
         --color-deep-purple: #3a2d5c;
         --color-lavender: #a18cd1;
         --color-dusty-pink: #fbc2eb;
-        --color-text: #2c2c2c;
-        --color-light-text: #f0f0f0;
         --color-highlight: #51407d;
     }
 
     body {
         font-family: 'Poppins', sans-serif;
-        background-color: var(--color-lavender);
+        background: linear-gradient(135deg, var(--color-lavender), var(--color-dusty-pink));
         margin: 0;
         padding-top: 70px;
     }
 
-    /* --- Navbar Styling --- */
-    .navbar {
-        background-color: var(--color-highlight);
-        padding: 0.5rem 1rem;
-        position: fixed;
-        top: 0;
-        width: 100%;
-        z-index: 1000;
-    }
-
-    .navbar-brand {
-        display: flex;
-        align-items: center;
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: var(--color-light-text);
-    }
-
-    .navbar-brand img {
-        height: 50px;
-        margin-right: 10px;
-        border-radius: 50%;
-    }
-
-    .navbar-brand h4 {
-        margin: 0;
-        color: var(--color-light-text);
+    .page-heading {
         font-family: 'Cinzel Decorative', cursive;
+        font-size: 2.3rem;
+        background: linear-gradient(90deg, var(--color-deep-purple), var(--color-highlight));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
-    .navbar .nav-link {
-        color: var(--color-light-text);
-        font-weight: 500;
-        padding: 0.5rem 1rem;
-    }
-
-    .navbar .nav-link.active,
-    .navbar .nav-link:hover {
-        color: #b899f1ff;
+    /* Section heading (left accent line - style D) */
+    .section-heading {
         font-weight: 600;
-    }
-
-    .navbar .form-control {
-        border-radius: 20px;
-        border: 1px solid #f39bfbff;
-        padding: 0.4rem 1rem;
-        width: 300px;
-    }
-
-    .profile-section {
-        display: flex;
-        align-items: center;
-        color: var(--color-light-text);
-    }
-
-    .profile-section img {
-        width: 35px;
-        height: 35px;
-        border-radius: 50%;
-        margin-right: 8px;
-        border: 1px solid #ddd;
-    }
-
-    .profile-section b {
-        color: var(--color-light-text);
-        font-weight: 600;
-    }
-
-    .btn-logout {
-        background-color: var(--color-dusty-pink);
+        font-size: 1.35rem;
         color: var(--color-deep-purple);
-        font-weight: bold;
-        border-radius: 20px;
-        padding: 0.4rem 1.2rem;
-        font-size: 0.9rem;
+        position: relative;
+        padding-left: 15px;
     }
 
-    .btn-logout:hover {
-        background-color: #ec9ed6ff;
-        color: var(--color-deep-purple);
+    .section-heading::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 6px;
+        height: 70%;
+        background: var(--color-highlight);
+        border-radius: 4px;
     }
 
-    /* --- Main Content Layout --- */
-    .main-content-wrapper {
-        padding: 20px;
-        width: 100%;
-        min-height: calc(100vh - 70px);
-    }
-
-    /* Custom class for 4 books per row on large screens inside a col-lg-8 (Perfect fit!) */
-    @media (min-width: 992px) {
-        .col-lg-1-4 {
-            flex: 0 0 auto;
-            width: 25%;
-            /* 4 books per row in an 8-column space */
-        }
-    }
-
-    /* Fallback for smaller screens: 2 books per row */
-    @media (max-width: 991.98px) {
-        .col-6 {
-            width: 50%;
-        }
-    }
-
-
-    /* --- Book Card Minimization --- */
     .book-card {
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        padding: 8px;
-        text-align: center;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background: #fff;
+        border-radius: 14px;
+        padding: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        transition: .25s ease-in-out;
         height: 100%;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
     }
 
     .book-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        transform: translateY(-5px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
     }
 
     .book-card img {
+        border-radius: 10px;
         width: 100%;
         aspect-ratio: 2 / 3;
-        height: auto;
-        border-radius: 6px;
-        margin-bottom: 5px;
+        object-fit: cover;
     }
 
     .book-title {
         font-weight: 600;
-        font-size: 0.95em;
-        line-height: 1.2;
-        min-height: 34px;
-        margin-bottom: 3px;
         color: var(--color-deep-purple);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
+        margin-top: 6px;
+        font-size: 0.95rem;
     }
 
-    .book-author {
-        color: var(--color-text);
-        font-size: 0.85em;
-        margin-top: 2px;
+    .book-author,
+    .book-category,
+    .book-rating {
+        font-size: 0.8rem;
+        color: #555;
     }
 
-    /* --- Form Minimization --- */
-    .add-book-form {
-        background: white;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        max-width: none;
-        margin-top: 50px;
+    .book-rating i {
+        color: #e6b800;
     }
 
-    .add-book-form .form-label,
-    .add-book-form .form-control {
-        font-size: 0.9rem;
+    .btn-add-shelf {
+        margin-top: auto;
+        background: var(--color-deep-purple);
+        color: #fff;
+        width: 100%;
+        border-radius: 25px;
+        padding: 6px 0;
+        font-size: 0.85rem;
+        border: none;
     }
 
-    .add-book-form .form-control {
-        padding: 0.375rem 0.75rem;
+    .btn-add-shelf:hover {
+        background: var(--color-highlight);
     }
 
-    .btn-add-book {
-        padding: 8px 15px;
-        font-size: 0.9rem;
-        border-radius: 20px;
-        background: #ac91f1ff;
+    .col-lg-1-4 {
+        flex: 0 0 auto;
+        width: 25%;
     }
     </style>
 </head>
 
 <body>
 
-    <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="reader_dashboard.php">
-                <img src="logo.JPEG" alt="BookSpace Logo">
-                <h4>bookSpace</h4>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a href="reader_dashboard.php" class="nav-link active">Dashboard</a></li>
-                    <li class="nav-item"><a href="bookshelf1.php" class="nav-link">Bookshelf</a></li>
-                    <li class="nav-item"><a href="cost.php" class="nav-link">Cost</a></li>
-                    <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-                    <li class="nav-item"><a href="chatbot.php" class="nav-link">AI Chatbot</a></li>
-                    <li class="nav-item"><a href="authors.php" class="nav-link">Authors</a></li>
-                </ul>
-                <div class="d-flex align-items-center">
-                    <form action="reader_dashboard.php" method="post" class="d-flex me-3">
-                        <input type="text" class="form-control" name="search" placeholder="Search books..."
-                            value="<?php echo htmlspecialchars($_POST['search'] ?? ''); ?>">
-                    </form>
-                    <div class="profile-section me-3 d-none d-lg-flex">
-                        <img src="profile.jpg" alt="Profile">
-                        <p class="mb-0">Welcome, <b><?php echo $_SESSION['role'] ?? 'Reader'; ?></b></p>
-                    </div>
-                    <button class="btn btn-logout">LOGOUT</button>
-                </div>
-            </div>
+    <?php include 'navbar.php'; ?>
+
+    <div class="container mt-4">
+        <div class="text-center mb-4">
+            <h2 class="page-heading">Explore My Bookshelf</h2>
         </div>
-    </nav>
 
-    <div class="main-content-wrapper">
-        <div class="container-fluid">
-            <div class="row w-100">
-                <div class="col-12 text-center mb-4">
-                    <h2 class="mb-4">Explore My Bookshelf</h2>
+        <div class="row g-4">
+            <div class="col-12 col-lg-8">
+                <h4 class="section-heading mb-3">Recommended Books</h4>
+                <div class="row g-3">
+
+                    <?php if(!empty($data['items'])): ?>
+                    <?php foreach($data['items'] as $book):
+                        $info = $book['volumeInfo'] ?? [];
+                        $title = $info['title'] ?? 'No Title';
+                        $authors = $info['authors'][0] ?? 'Unknown Author';
+                        $category = $info['categories'][0] ?? 'General';
+                        $rating = $info['averageRating'] ?? null;
+                        $img = $info['imageLinks']['thumbnail'] ?? 'https://placehold.co/300x450/a18cd1/3a2d5c?text=No+Cover';
+                    ?>
+                    <div class="col-6 col-md-4 col-lg-1-4">
+                        <div class="book-card">
+                            <img src="<?= $img ?>" alt="Book Cover">
+                            <div class="book-title"><?= htmlspecialchars($title) ?></div>
+                            <div class="book-author"><?= htmlspecialchars($authors) ?></div>
+                            <div class="book-category"><?= htmlspecialchars($category) ?></div>
+                            <?php if($rating): ?>
+                            <div class="book-rating">
+                                <?php for($i=0;$i<round($rating);$i++) echo "<i class='bi bi-star-fill'></i> "; ?>
+                            </div>
+                            <?php endif; ?>
+                            <button class="btn-add-shelf">Add to Shelf</button>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                    <?php endif; ?>
+
                 </div>
             </div>
 
-            <div class="row w-100 g-4">
+            <!-- UPDATED PROFESSIONAL FORM START -->
+            <div class="col-12 col-lg-4">
+                <div class="card shadow-lg p-4" style="
+                        border-radius: 20px;
+                        background: rgba(255, 255, 255, 0.82);
+                        backdrop-filter: blur(12px);
+                        border: 1px solid rgba(255, 255, 255, 0.35);
+                    ">
 
-                <div class="col-12 col-lg-8">
-                    <h4 class="mb-3">My Current Reads</h4>
-                    <div class="row g-3">
+                    <h4 class="mb-4" style="
+                            font-weight: 700;
+                            color: var(--color-deep-purple);
+                            text-align: center;
+                            padding-bottom: 8px;
+                            border-bottom: 2px solid rgba(58, 45, 92, 0.15);
+                        ">
+                        Add a New Book
+                    </h4>
 
-                        <div class="col-6 col-md-4 col-lg-1-4">
-                            <div class="book-card">
-                                <img src="https://placehold.co/300x450/a18cd1/3a2d5c?text=Book+1" alt="Book Cover 1">
-                                <div class="book-info">
-                                    <div class="book-title">The Book Title Can Be Very Long</div>
-                                    <div class="book-author">Author Name</div>
-                                </div>
-                            </div>
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label" style="font-weight:600; color:#333;">Book Title</label>
+                            <input type="text" class="form-control" placeholder="Enter book title"
+                                style="border-radius:12px;padding:10px;border:1px solid #ddd;transition:.3s"
+                                onfocus="this.style.borderColor='var(--color-deep-purple)'"
+                                onblur="this.style.borderColor='#ddd'">
                         </div>
 
-                        <div class="col-6 col-md-4 col-lg-1-4">
-                            <div class="book-card">
-                                <img src="https://placehold.co/300x450/a18cd1/3a2d5c?text=Book+2" alt="Book Cover 2">
-                                <div class="book-info">
-                                    <div class="book-title">Another Great Read</div>
-                                    <div class="book-author">Jane Doe</div>
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label" style="font-weight:600; color:#333;">Author Name</label>
+                            <input type="text" class="form-control" placeholder="Enter author name"
+                                style="border-radius:12px;padding:10px;border:1px solid #ddd;transition:.3s"
+                                onfocus="this.style.borderColor='var(--color-deep-purple)'"
+                                onblur="this.style.borderColor='#ddd'">
                         </div>
 
-                        <div class="col-6 col-md-4 col-lg-1-4">
-                            <div class="book-card">
-                                <img src="https://placehold.co/300x450/a18cd1/3a2d5c?text=Book+3" alt="Book Cover 3">
-                                <div class="book-info">
-                                    <div class="book-title">Mystery of the Woods: Part II</div>
-                                    <div class="book-author">John Smith</div>
-                                </div>
-                            </div>
+                        <div class="mb-4">
+                            <label class="form-label" style="font-weight:600; color:#333;">Cover URL (Optional)</label>
+                            <input type="text" class="form-control" placeholder="Paste image URL"
+                                style="border-radius:12px;padding:10px;border:1px solid #ddd;transition:.3s"
+                                onfocus="this.style.borderColor='var(--color-deep-purple)'"
+                                onblur="this.style.borderColor='#ddd'">
                         </div>
 
-                        <div class="col-6 col-md-4 col-lg-1-4">
-                            <div class="book-card">
-                                <img src="https://placehold.co/300x450/a18cd1/3a2d5c?text=Book+4" alt="Book Cover 4">
-                                <div class="book-info">
-                                    <div class="book-title">Sci-Fi Adventures</div>
-                                    <div class="book-author">A. Writer</div>
-                                </div>
-                            </div>
-                        </div>
+                        <button type="submit" class="btn w-100" style="
+                                background: linear-gradient(135deg, var(--color-deep-purple), var(--color-highlight));
+                                border:none;color:white;border-radius:35px;
+                                padding:12px 0;font-size:1rem;font-weight:600;
+                                box-shadow:0 4px 14px rgba(0,0,0,0.15);
+                                transition:0.3s;
+                            " onmouseover="this.style.transform='scale(1.03)'"
+                            onmouseout="this.style.transform='scale(1)'">
+                            + Add Book
+                        </button>
 
-                    </div>
-                </div>
-
-                <div class="col-12 col-lg-4">
-                    <div class="add-book-form">
-                        <h4 class="text-center mb-3">Add a New Book</h4>
-                        <form action="#" method="post">
-                            <div class="mb-3">
-                                <label for="bookTitle" class="form-label">Book Title</label>
-                                <input type="text" class="form-control" id="bookTitle" placeholder="Enter book title">
-                            </div>
-                            <div class="mb-3">
-                                <label for="bookAuthor" class="form-label">Author Name</label>
-                                <input type="text" class="form-control" id="bookAuthor" placeholder="Enter author name">
-                            </div>
-                            <div class="mb-3">
-                                <label for="bookCover" class="form-label">Cover URL (Optional)</label>
-                                <input type="text" class="form-control" id="bookCover"
-                                    placeholder="Paste image URL here">
-                            </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-add-book">Add Book</button>
-                            </div>
-                        </form>
-                    </div>
+                    </form>
                 </div>
             </div>
+            <!-- UPDATED PROFESSIONAL FORM END -->
+
         </div>
     </div>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
