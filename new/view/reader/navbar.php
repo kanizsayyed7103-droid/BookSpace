@@ -1,9 +1,26 @@
 <?php
-// ✅ Must be at the very top, no blank lines above
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-$username = $_SESSION['username'] ?? 'Reader';
+
+require_once(__DIR__ . '/../../controller/db/database.php');
+
+// Security: Redirect if not logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../index.html");
+    exit();
+}
+
+$user_id = $_SESSION['user_id'];
+
+// Fetch user's data
+$stmt = $pdo->prepare("SELECT username, profile_image FROM users WHERE user_id = ?");
+$stmt->execute([$user_id]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+$username = htmlspecialchars($user['username'] ?? 'Reader');
+$profile_image = !empty($user['profile_image'])
+    ? htmlspecialchars($user['profile_image'])
+    : '/BookSpace_project/new/view/reader/uploads/default.png';
 ?>
 
 <!DOCTYPE html>
@@ -24,7 +41,6 @@ $username = $_SESSION['username'] ?? 'Reader';
         --color-deep-purple: #3a2d5c;
         --color-lavender: #a18cd1;
         --color-dusty-pink: #fbc2eb;
-        --color-text: #2c2c2c;
         --color-light-text: #f0f0f0;
         --color-highlight: #51407d;
     }
@@ -38,7 +54,7 @@ $username = $_SESSION['username'] ?? 'Reader';
 
     .navbar {
         background-color: var(--color-highlight);
-        padding: 0.5rem 1rem;
+        padding: 0.6rem 1.5rem;
         position: fixed;
         top: 0;
         width: 100%;
@@ -77,39 +93,65 @@ $username = $_SESSION['username'] ?? 'Reader';
         font-weight: 600;
     }
 
-    .navbar .form-control {
-        border-radius: 20px;
-        border: 1px solid #f39bfbff;
+    .form-control {
+        border-radius: 25px;
+        border: 1px solid #fbc2eb;
         padding: 0.4rem 1rem;
-        width: 300px;
+        width: 280px;
+        font-size: 0.9rem;
     }
 
-    .profile-section {
+    .profile-container {
         display: flex;
         align-items: center;
-        color: var(--color-light-text);
+        gap: 10px;
     }
 
-    .profile-section img {
-        width: 35px;
-        height: 35px;
+    .profile-container img {
+        width: 46px;
+        height: 46px;
         border-radius: 50%;
-        margin-right: 8px;
-        border: 1px solid #ddd;
+        border: 2px solid var(--color-dusty-pink);
+        object-fit: cover;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .profile-container img:hover {
+        transform: scale(1.08);
+        box-shadow: 0 0 10px rgba(251, 194, 235, 0.6);
+    }
+
+    .username-text {
+        color: var(--color-light-text);
+        font-weight: 500;
+        font-size: 1rem;
+        margin-right: 15px;
+        white-space: nowrap;
     }
 
     .btn-logout {
         background-color: var(--color-dusty-pink);
         color: var(--color-deep-purple);
         font-weight: bold;
-        border-radius: 20px;
-        padding: 0.4rem 1.2rem;
+        border-radius: 25px;
+        padding: 0.4rem 1rem;
         font-size: 0.9rem;
+        transition: background-color 0.3s ease;
     }
 
     .btn-logout:hover {
         background-color: #ec9ed6ff;
         color: var(--color-deep-purple);
+    }
+
+    @media (max-width: 992px) {
+        .form-control {
+            width: 180px;
+        }
+
+        .username-text {
+            display: none;
+        }
     }
     </style>
 </head>
@@ -118,49 +160,57 @@ $username = $_SESSION['username'] ?? 'Reader';
 
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
-            <a class="navbar-brand" href="reader_dashboard.php">
-                <img src="logo.JPEG" alt="BookSpace Logo">
+            <a class="navbar-brand" href="/BookSpace_project/new/view/reader/reader_dashboard.php">
+                <img src="/BookSpace_project/new/view/reader/logo.JPEG" alt="BookSpace Logo">
                 <h4>bookSpace</h4>
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler text-light" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a href="reader_dashboard.php" class="nav-link active">Dashboard</a></li>
-                    <li class="nav-item"><a href="bookshelf1.php" class="nav-link">Bookshelf</a></li>
-                    <li class="nav-item"><a href="cost.php" class="nav-link">Cost</a></li>
-                    <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-                    <li class="nav-item"><a href="chatbot.php" class="nav-link">AI Chatbot</a></li>
-                    <!-- <li class="nav-item"><a href="authors.php" class="nav-link">Authors</a></li> -->
+                    <li class="nav-item"><a href="/BookSpace_project/new/view/reader/reader_dashboard.php"
+                            class="nav-link active">Dashboard</a></li>
+                    <li class="nav-item"><a href="/BookSpace_project/new/view/reader/bookshelf1.php"
+                            class="nav-link">Bookshelf</a></li>
+                    <li class="nav-item"><a href="/BookSpace_project/new/view/reader/followus.php"
+                            class="nav-link">Follow Us</a></li>
+                    <li class="nav-item"><a href="/BookSpace_project/new/view/reader/contact.php"
+                            class="nav-link">Contact</a></li>
+                    <li class="nav-item"><a href="/BookSpace_project/new/view/reader/chatbot.php" class="nav-link">AI
+                            Chatbot</a></li>
                 </ul>
 
-                <div class="d-flex align-items-center">
-                    <!-- Search -->
-                    <form action="reader_dashboard.php" method="post" class="d-flex me-3">
-                        <input type="text" class="form-control" name="search" placeholder="Search books..."
-                            value="<?php echo htmlspecialchars($_POST['search'] ?? ''); ?>">
-                    </form>
+                <!-- Search Bar -->
+                <form action="/BookSpace_project/new/view/reader/reader_dashboard.php" method="post"
+                    class="d-flex align-items-center me-3">
+                    <input type="text" class="form-control" name="search" placeholder="Search books..."
+                        value="<?php echo htmlspecialchars($_POST['search'] ?? ''); ?>">
+                </form>
 
-                    <!-- Profile -->
-                    <div class="profile-section me-3 d-none d-lg-flex">
-                        <img src="kaniz.jpg" alt="Profile">
-                        <p class="mb-0">Welcome, <b><?php echo htmlspecialchars($username); ?></b></p>
-                    </div>
-
-                    <!-- Logout -->
-                    <form action="logout.php" method="post">
-                        <button type="submit" class="btn btn-logout">LOGOUT</button>
-                    </form>
+                <!-- Profile + Username -->
+                <div class="profile-container me-3">
+                    <a href="/BookSpace_project/new/view/reader/profile.php" class="d-inline-block">
+                        <img src="<?php echo $profile_image; ?>" alt="Profile">
+                    </a>
+                    <span class="username-text"><?php echo $username; ?></span>
                 </div>
+
+                <!-- Logout Button -->
+                <form action="/BookSpace_project/new/logout.php" method="post" class="ms-2">
+                    <button type="submit" class="btn btn-logout">LOGOUT</button>
+                </form>
+
+
             </div>
         </div>
     </nav>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>
