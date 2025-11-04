@@ -1,237 +1,278 @@
+<?php
+require_once '../../controller/db/database.php';
+
+// Fetch books from DB
+$stmt = $pdo->query("SELECT * FROM bookshelf ORDER BY id DESC");
+$books = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
-<?php
-$q = urlencode($_POST['search'] ?? 'harry potter'); 
-$key = 'AIzaSyCOCuStWqupRkpuhuYgeG4tqGYUDIsizns';  
-$url = "https://www.googleapis.com/books/v1/volumes?q={$q}&key={$key}&maxResults=12";
-
-$json = file_get_contents($url);
-$data = json_decode($json, true);
-session_start();
-?>
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BookSpace | My Bookshelf</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Cinzel+Decorative:wght@700&display=swap"
-        rel="stylesheet">
-
+    <title>BookSpace | Bookshelf</title>
     <style>
     :root {
         --color-deep-purple: #3a2d5c;
         --color-lavender: #a18cd1;
         --color-dusty-pink: #fbc2eb;
+        --color-text: #2c2c2c;
+        --color-light-text: #f0f0f0;
         --color-highlight: #51407d;
     }
 
     body {
-        font-family: 'Poppins', sans-serif;
-        background: linear-gradient(135deg, var(--color-lavender), var(--color-dusty-pink));
         margin: 0;
-        padding-top: 70px;
+        font-family: 'Poppins', sans-serif;
+        background: var(--color-lavender);
+        color: var(--color-text);
     }
 
-    .page-heading {
-        font-family: 'Cinzel Decorative', cursive;
-        font-size: 2.3rem;
-        background: linear-gradient(90deg, var(--color-deep-purple), var(--color-highlight));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+    .dashboard-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 40px 60px;
+        gap: 50px;
     }
 
-    /* Section heading (left accent line - style D) */
-    .section-heading {
+    /* ===== BOOKS SECTION ===== */
+    .books-section {
+        flex: 3;
+    }
+
+    .books-section h2 {
+        color: #5e35b1;
+        margin-bottom: 25px;
+        font-size: 24px;
         font-weight: 600;
-        font-size: 1.35rem;
-        color: var(--color-deep-purple);
-        position: relative;
-        padding-left: 15px;
     }
 
-    .section-heading::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 6px;
-        height: 70%;
-        background: var(--color-highlight);
-        border-radius: 4px;
+    .books-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 25px;
     }
 
     .book-card {
         background: #fff;
         border-radius: 14px;
-        padding: 12px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-        transition: .25s ease-in-out;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: transform 0.3s, box-shadow 0.3s;
+        position: relative;
     }
 
     .book-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-6px);
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
     }
 
     .book-card img {
-        border-radius: 10px;
         width: 100%;
-        aspect-ratio: 2 / 3;
+        height: 240px;
         object-fit: cover;
     }
 
-    .book-title {
-        font-weight: 600;
-        color: var(--color-deep-purple);
-        margin-top: 6px;
-        font-size: 0.95rem;
+    .book-info {
+        padding: 12px;
     }
 
-    .book-author,
-    .book-category,
-    .book-rating {
-        font-size: 0.8rem;
-        color: #555;
+    .book-info h3 {
+        font-size: 16px;
+        color: #333;
+        margin: 8px 0 5px;
     }
 
-    .book-rating i {
-        color: #e6b800;
+    .book-info p {
+        color: #666;
+        font-size: 14px;
+        margin: 0;
     }
 
-    .btn-add-shelf {
-        margin-top: auto;
-        background: var(--color-deep-purple);
-        color: #fff;
-        width: 100%;
-        border-radius: 25px;
-        padding: 6px 0;
-        font-size: 0.85rem;
+    .delete-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #ff4d4d;
         border: none;
+        color: white;
+        font-size: 13px;
+        padding: 6px 9px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: background 0.3s;
     }
 
-    .btn-add-shelf:hover {
-        background: var(--color-highlight);
+    .delete-btn:hover {
+        background: #e53935;
     }
 
-    .col-lg-1-4 {
-        flex: 0 0 auto;
-        width: 25%;
+    /* ===== ADD BOOK FORM ===== */
+    .add-book-form {
+        flex: 1;
+        max-width: 380px;
+        background: #ffffff;
+        padding: 30px 25px;
+        border-radius: 16px;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        align-self: flex-start;
+    }
+
+    .add-book-form h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #5e35b1;
+        font-size: 22px;
+    }
+
+    .add-book-form input,
+    .add-book-form select,
+    .add-book-form button {
+        width: 100%;
+        padding: 10px 12px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 15px;
+    }
+
+    .add-book-form input:focus,
+    .add-book-form select:focus {
+        border-color: #7e57c2;
+        outline: none;
+    }
+
+    .add-book-form button {
+        background-color: #5e35b1;
+        color: white;
+        border: none;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .add-book-form button:hover {
+        background-color: #4527a0;
+    }
+
+    .cover-preview {
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .cover-preview img {
+        width: 150px;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    @media (max-width: 900px) {
+        .dashboard-container {
+            flex-direction: column;
+            padding: 25px;
+        }
+
+        .add-book-form {
+            max-width: 100%;
+        }
     }
     </style>
 </head>
 
 <body>
-
     <?php include 'navbar.php'; ?>
 
-    <div class="container mt-4">
-        <div class="text-center mb-4">
-            <h2 class="page-heading">Explore My Bookshelf</h2>
-        </div>
+    <div class="dashboard-container">
 
-        <div class="row g-4">
-            <div class="col-12 col-lg-8">
-                <h4 class="section-heading mb-3">Recommended Books</h4>
-                <div class="row g-3">
-
-                    <?php if(!empty($data['items'])): ?>
-                    <?php foreach($data['items'] as $book):
-                        $info = $book['volumeInfo'] ?? [];
-                        $title = $info['title'] ?? 'No Title';
-                        $authors = $info['authors'][0] ?? 'Unknown Author';
-                        $category = $info['categories'][0] ?? 'General';
-                        $rating = $info['averageRating'] ?? null;
-                        $img = $info['imageLinks']['thumbnail'] ?? 'https://placehold.co/300x450/a18cd1/3a2d5c?text=No+Cover';
-                    ?>
-                    <div class="col-6 col-md-4 col-lg-1-4">
-                        <div class="book-card">
-                            <img src="<?= $img ?>" alt="Book Cover">
-                            <div class="book-title"><?= htmlspecialchars($title) ?></div>
-                            <div class="book-author"><?= htmlspecialchars($authors) ?></div>
-                            <div class="book-category"><?= htmlspecialchars($category) ?></div>
-                            <?php if($rating): ?>
-                            <div class="book-rating">
-                                <?php for($i=0;$i<round($rating);$i++) echo "<i class='bi bi-star-fill'></i> "; ?>
-                            </div>
-                            <?php endif; ?>
-                            <button class="btn-add-shelf">Add to Shelf</button>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                    <?php endif; ?>
-
-                </div>
-            </div>
-
-            <!-- UPDATED PROFESSIONAL FORM START -->
-            <div class="col-12 col-lg-4">
-                <div class="card shadow-lg p-4" style="
-                        border-radius: 20px;
-                        background: rgba(255, 255, 255, 0.82);
-                        backdrop-filter: blur(12px);
-                        border: 1px solid rgba(255, 255, 255, 0.35);
-                    ">
-
-                    <h4 class="mb-4" style="
-                            font-weight: 700;
-                            color: var(--color-deep-purple);
-                            text-align: center;
-                            padding-bottom: 8px;
-                            border-bottom: 2px solid rgba(58, 45, 92, 0.15);
-                        ">
-                        Add a New Book
-                    </h4>
-
-                    <form method="post">
-                        <div class="mb-3">
-                            <label class="form-label" style="font-weight:600; color:#333;">Book Title</label>
-                            <input type="text" class="form-control" placeholder="Enter book title"
-                                style="border-radius:12px;padding:10px;border:1px solid #ddd;transition:.3s"
-                                onfocus="this.style.borderColor='var(--color-deep-purple)'"
-                                onblur="this.style.borderColor='#ddd'">
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label" style="font-weight:600; color:#333;">Author Name</label>
-                            <input type="text" class="form-control" placeholder="Enter author name"
-                                style="border-radius:12px;padding:10px;border:1px solid #ddd;transition:.3s"
-                                onfocus="this.style.borderColor='var(--color-deep-purple)'"
-                                onblur="this.style.borderColor='#ddd'">
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label" style="font-weight:600; color:#333;">Cover URL (Optional)</label>
-                            <input type="text" class="form-control" placeholder="Paste image URL"
-                                style="border-radius:12px;padding:10px;border:1px solid #ddd;transition:.3s"
-                                onfocus="this.style.borderColor='var(--color-deep-purple)'"
-                                onblur="this.style.borderColor='#ddd'">
-                        </div>
-
-                        <button type="submit" class="btn w-100" style="
-                                background: linear-gradient(135deg, var(--color-deep-purple), var(--color-highlight));
-                                border:none;color:white;border-radius:35px;
-                                padding:12px 0;font-size:1rem;font-weight:600;
-                                box-shadow:0 4px 14px rgba(0,0,0,0.15);
-                                transition:0.3s;
-                            " onmouseover="this.style.transform='scale(1.03)'"
-                            onmouseout="this.style.transform='scale(1)'">
-                            + Add Book
-                        </button>
-
+        <!-- BOOK LIST -->
+        <div class="books-section">
+            <h2>Recommended Books</h2>
+            <div class="books-grid">
+                <?php
+            $count = 0;
+            foreach ($books as $book):
+                if ($count >= 4) break; // Limit to 4 books
+            ?>
+                <div class="book-card">
+                    <form action="../../controller/db/delete_book.php" method="POST"
+                        onsubmit="return confirm('Are you sure you want to delete this book?');">
+                        <input type="hidden" name="id" value="<?= htmlspecialchars($book['id']) ?>">
+                        <button class="delete-btn" title="Delete Book">&times;</button>
                     </form>
+                    <img src="<?= htmlspecialchars($book['cover']) ?>" alt="<?= htmlspecialchars($book['title']) ?>">
+                    <div class="book-info">
+                        <h3><?= htmlspecialchars($book['title']) ?></h3>
+                        <p><?= htmlspecialchars($book['author']) ?></p>
+                        <p>⭐ <?= htmlspecialchars($book['rating']) ?></p>
+                    </div>
                 </div>
+                <?php
+                $count++;
+            endforeach;
+            ?>
             </div>
-            <!-- UPDATED PROFESSIONAL FORM END -->
-
         </div>
+
+        <!-- ADD BOOK FORM -->
+        <div class="add-book-form">
+            <h2>Add a New Book</h2>
+            <div class="cover-preview">
+                <img id="bookCover" src="https://via.placeholder.com/150x230?text=Preview" alt="Book cover preview">
+            </div>
+            <form action="../../controller/db/add_book.php" method="POST" id="bookForm">
+                <input type="text" name="title" id="bookTitle" placeholder="Enter book title" required>
+                <input type="text" name="author" id="bookAuthor" placeholder="Author name" required>
+                <select name="rating" required>
+                    <option value="" disabled selected>Rating</option>
+                    <option value="5">5</option>
+                    <option value="4.5">4.5</option>
+                    <option value="4">4</option>
+                    <option value="3.5">3.5</option>
+                    <option value="3">3</option>
+                </select>
+                <input type="hidden" name="cover" id="coverUrl">
+                <button type="submit">Add Book</button>
+            </form>
+        </div>
+
     </div>
+
+    <!-- GOOGLE BOOKS API SCRIPT -->
+    <script>
+    document.getElementById('bookTitle').addEventListener('blur', function() {
+        const title = this.value.trim();
+        if (!title) return;
+
+        const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(title)}`;
+
+        fetch(apiUrl)
+            .then(res => res.json())
+            .then(data => {
+                if (data.items && data.items.length > 0) {
+                    const book = data.items[0].volumeInfo;
+                    const thumbnail = book.imageLinks ? book.imageLinks.thumbnail :
+                        "https://via.placeholder.com/150x230?text=No+Cover";
+                    const author = book.authors ? book.authors.join(', ') : "";
+
+                    document.getElementById('bookCover').src = thumbnail;
+                    document.getElementById('bookAuthor').value = author;
+                    document.getElementById('coverUrl').value = thumbnail;
+                } else {
+                    document.getElementById('bookCover').src =
+                        "https://via.placeholder.com/150x230?text=No+Cover";
+                }
+            })
+            .catch(() => {
+                document.getElementById('bookCover').src = "https://via.placeholder.com/150x230?text=Error";
+            });
+    });
+    </script>
+
 </body>
 
 </html>
