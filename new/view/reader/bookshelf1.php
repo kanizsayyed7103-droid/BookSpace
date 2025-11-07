@@ -1,11 +1,30 @@
 <?php
+session_start();
 require_once '../../controller/db/database.php';
 
-// Fetch books from DB
+if (!isset($_SESSION['user_id'])) {
+    exit("Unauthorized access.");
+}
+
+$user_id = $_SESSION['user_id'];
+$username = $_SESSION['username'];
+$role = $_SESSION['role'];
+
+// Fetch author's books
+$my_books = [];
+if ($role === 'author') {
+    $stmt_my_books = $pdo->prepare("SELECT book_id, title, genre, views, created_at, status, cover_image 
+                                    FROM books 
+                                    WHERE author_id = ? 
+                                    ORDER BY created_at DESC");
+    $stmt_my_books->execute([$user_id]);
+    $my_books = $stmt_my_books->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Fetch general bookshelf
 $stmt = $pdo->query("SELECT * FROM bookshelf ORDER BY id DESC");
 $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -15,60 +34,62 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>BookSpace | Bookshelf</title>
     <style>
     :root {
-        --color-deep-purple: #3a2d5c;
-        --color-lavender: #a18cd1;
-        --color-dusty-pink: #fbc2eb;
-        --color-text: #2c2c2c;
-        --color-light-text: #f0f0f0;
-        --color-highlight: #51407d;
+        --purple: #5e35b1;
+        --lavender: #a18cd1;
+        --white: #fff;
+        --gray: #f3f3f3;
+        --text-dark: #333;
+        --shadow: rgba(0, 0, 0, 0.15);
     }
 
     body {
         margin: 0;
-        font-family: 'Poppins', sans-serif;
-        background: var(--color-lavender);
-        color: var(--color-text);
+        font-family: "Poppins", sans-serif;
+        background: var(--lavender);
+        color: var(--text-dark);
     }
 
-    .dashboard-container {
+    .main-container {
         display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        padding: 40px 60px;
-        gap: 50px;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 30px 50px;
+        gap: 30px;
     }
 
-    /* ===== BOOKS SECTION ===== */
+    /* Left side - Bookshelf */
     .books-section {
         flex: 3;
+        background: #fff;
+        padding: 25px;
+        border-radius: 14px;
+        box-shadow: 0 4px 14px var(--shadow);
     }
 
     .books-section h2 {
-        color: #5e35b1;
-        margin-bottom: 25px;
-        font-size: 24px;
-        font-weight: 600;
+        text-align: center;
+        color: var(--purple);
+        margin-bottom: 20px;
     }
 
     .books-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 25px;
+        gap: 20px;
     }
 
     .book-card {
-        background: #fff;
-        border-radius: 14px;
+        background: var(--white);
+        border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 12px var(--shadow);
+        transition: transform 0.3s;
         text-align: center;
-        transition: transform 0.3s, box-shadow 0.3s;
         position: relative;
     }
 
     .book-card:hover {
         transform: translateY(-6px);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
     }
 
     .book-card img {
@@ -78,19 +99,19 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     .book-info {
-        padding: 12px;
+        padding: 10px;
     }
 
     .book-info h3 {
+        margin: 6px 0;
         font-size: 16px;
-        color: #333;
-        margin: 8px 0 5px;
+        color: var(--text-dark);
     }
 
     .book-info p {
+        margin: 2px 0;
         color: #666;
         font-size: 14px;
-        margin: 0;
     }
 
     .delete-btn {
@@ -98,66 +119,53 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
         top: 10px;
         right: 10px;
         background: #ff4d4d;
+        color: #fff;
         border: none;
-        color: white;
-        font-size: 13px;
-        padding: 6px 9px;
         border-radius: 50%;
+        width: 28px;
+        height: 28px;
         cursor: pointer;
-        transition: background 0.3s;
+        font-size: 16px;
     }
 
-    .delete-btn:hover {
-        background: #e53935;
-    }
-
-    /* ===== ADD BOOK FORM ===== */
+    /* Right side - Add Book form */
     .add-book-form {
         flex: 1;
-        max-width: 380px;
-        background: #ffffff;
-        padding: 30px 25px;
-        border-radius: 16px;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        background: #fff;
+        padding: 25px;
+        border-radius: 14px;
+        box-shadow: 0 4px 14px var(--shadow);
+        max-width: 400px;
         align-self: flex-start;
     }
 
     .add-book-form h2 {
         text-align: center;
-        margin-bottom: 20px;
-        color: #5e35b1;
-        font-size: 22px;
+        color: var(--purple);
+        margin-bottom: 15px;
     }
 
     .add-book-form input,
     .add-book-form select,
     .add-book-form button {
         width: 100%;
-        padding: 10px 12px;
-        margin-bottom: 15px;
-        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 12px;
         border: 1px solid #ccc;
+        border-radius: 8px;
         font-size: 15px;
     }
 
-    .add-book-form input:focus,
-    .add-book-form select:focus {
-        border-color: #7e57c2;
-        outline: none;
-    }
-
     .add-book-form button {
-        background-color: #5e35b1;
-        color: white;
+        background: var(--purple);
+        color: #fff;
         border: none;
-        font-size: 16px;
-        font-weight: 500;
         cursor: pointer;
-        transition: background 0.3s;
+        font-weight: 500;
     }
 
     .add-book-form button:hover {
-        background-color: #4527a0;
+        background: #4527a0;
     }
 
     .cover-preview {
@@ -168,13 +176,13 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
     .cover-preview img {
         width: 150px;
         border-radius: 10px;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 3px 10px var(--shadow);
     }
 
-    @media (max-width: 900px) {
-        .dashboard-container {
+    @media (max-width: 992px) {
+        .main-container {
             flex-direction: column;
-            padding: 25px;
+            align-items: center;
         }
 
         .add-book-form {
@@ -187,23 +195,32 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
     <?php include 'navbar.php'; ?>
 
-    <div class="dashboard-container">
-
-        <!-- BOOK LIST -->
+    <div class="main-container">
+        <!-- Left side (Books) -->
         <div class="books-section">
+            <?php if ($role === 'author'): ?>
+            <h2>Your Published Books</h2>
+            <?php if (empty($my_books)): ?>
+            <p style="text-align:center;">You haven’t published any books yet.</p>
+            <?php else: ?>
+            <div class="books-grid">
+                <?php foreach ($my_books as $book): ?>
+                <div class="book-card">
+                    <img src="<?php echo "../" . htmlspecialchars($book['cover_image']); ?>" alt="Book">
+                    <div class="book-info">
+                        <h3><?php echo htmlspecialchars($book['title']); ?></h3>
+                        <p><?php echo htmlspecialchars($book['genre']); ?></p>
+                        <p>Views: <?php echo htmlspecialchars($book['views']); ?></p>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+            <?php else: ?>
             <h2>Recommended Books</h2>
             <div class="books-grid">
-                <?php
-            $count = 0;
-            foreach ($books as $book):
-                if ($count >= 4) break; // Limit to 4 books
-            ?>
+                <?php foreach ($books as $book): ?>
                 <div class="book-card">
-                    <form action="../../controller/db/delete_book.php" method="POST"
-                        onsubmit="return confirm('Are you sure you want to delete this book?');">
-                        <input type="hidden" name="id" value="<?= htmlspecialchars($book['id']) ?>">
-                        <button class="delete-btn" title="Delete Book">&times;</button>
-                    </form>
                     <img src="<?= htmlspecialchars($book['cover']) ?>" alt="<?= htmlspecialchars($book['title']) ?>">
                     <div class="book-info">
                         <h3><?= htmlspecialchars($book['title']) ?></h3>
@@ -211,14 +228,14 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <p>⭐ <?= htmlspecialchars($book['rating']) ?></p>
                     </div>
                 </div>
-                <?php
-                $count++;
-            endforeach;
-            ?>
+                <?php endforeach; ?>
             </div>
+            <?php endif; ?>
+
         </div>
 
-        <!-- ADD BOOK FORM -->
+        <!-- Right side (Form) -->
+        <?php if ($role === 'reader'): ?>
         <div class="add-book-form">
             <h2>Add a New Book</h2>
             <div class="cover-preview">
@@ -239,17 +256,15 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <button type="submit">Add Book</button>
             </form>
         </div>
-
     </div>
+    <?php endif; ?>
 
-    <!-- GOOGLE BOOKS API SCRIPT -->
+
     <script>
-    document.getElementById('bookTitle').addEventListener('blur', function() {
+    document.getElementById('bookTitle')?.addEventListener('blur', function() {
         const title = this.value.trim();
         if (!title) return;
-
         const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(title)}`;
-
         fetch(apiUrl)
             .then(res => res.json())
             .then(data => {
@@ -258,13 +273,9 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     const thumbnail = book.imageLinks ? book.imageLinks.thumbnail :
                         "https://via.placeholder.com/150x230?text=No+Cover";
                     const author = book.authors ? book.authors.join(', ') : "";
-
                     document.getElementById('bookCover').src = thumbnail;
                     document.getElementById('bookAuthor').value = author;
                     document.getElementById('coverUrl').value = thumbnail;
-                } else {
-                    document.getElementById('bookCover').src =
-                        "https://via.placeholder.com/150x230?text=No+Cover";
                 }
             })
             .catch(() => {
@@ -272,7 +283,6 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
             });
     });
     </script>
-
 </body>
 
 </html>
