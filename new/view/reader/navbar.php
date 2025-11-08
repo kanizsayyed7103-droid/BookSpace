@@ -176,8 +176,9 @@ $profile_image = !empty($user['profile_image'])
                             class="nav-link active">Dashboard</a></li>
                     <li class="nav-item"><a href="/BookSpace_project/new/view/reader/bookshelf1.php"
                             class="nav-link">Bookshelf</a></li>
-                    <li class="nav-item"><a href="/BookSpace_project/new/view/reader/followus.php"
-                            class="nav-link">Follow Us</a></li>
+                    <li class="nav-item"><a href="/BookSpace_project/new/view/reader/authors_book.php"
+                            class="nav-link">Authors Book</a>
+                    </li>
                     <li class="nav-item"><a href="/BookSpace_project/new/view/reader/contact.php"
                             class="nav-link">Contact</a></li>
                     <li class="nav-item"><a href="/BookSpace_project/new/view/reader/chatbot.php" class="nav-link">AI

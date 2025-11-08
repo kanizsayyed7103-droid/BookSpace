@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id']) && $_SE
         $stmt = $pdo->prepare($sql);
         
         // Add the new '$status' variable to the end of the array being executed
-        $stmt->execute([$title, 'description', $genre, $coverImagePath, $author_id, $status]);
+        $stmt->execute([$title, $description, $genre, $coverImagePath, $author_id, $status]);
 
         // Redirect back to the dashboard
         header("Location: ../view/my_books.php?status=added");

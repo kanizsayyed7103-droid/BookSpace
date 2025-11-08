@@ -1,38 +1,34 @@
 <?php
 session_start();
-require_once './db/database.php';
+require_once 'db/database.php'; // adjust if needed
 
-// Security: Check if user is a logged-in author
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'author') {
-    header("Location: ../index.php");
-    exit();
+// ✅ Optional: if you want only logged-in users to delete
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
+    exit;
 }
 
-// Get the book ID from the URL and the author ID from the session
-$book_id_to_delete = $_GET['id'] ?? null;
-$author_id = $_SESSION['user_id'];
+if (!isset($_POST['book_id']) || empty($_POST['book_id'])) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Book ID missing']);
+    exit;
+}
 
-if ($book_id_to_delete) {
-    try {
-        // CRUCIAL SECURITY STEP:
-        // Only delete the book if the book_id matches AND the author_id matches.
-        // This prevents one author from deleting another author's book.
-        $sql = "DELETE FROM books WHERE book_id = ? AND author_id = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$book_id_to_delete, $author_id]);
+$book_id = intval($_POST['book_id']);
 
-        // Redirect back to the book management page with a success message
-        header("Location: ../view/my_books.php?status=deleted");
-        exit();
+try {
+    $stmt = $pdo->prepare("DELETE FROM bookshelf WHERE id = ?");
+    $stmt->execute([$book_id]);
 
-    } catch (PDOException $e) {
-        // Handle potential database errors
-        header("Location: ../view/my_books.php?error=dberror");
-        exit();
+    if ($stmt->rowCount() > 0) {
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Book not found']);
     }
-} else {
-    // If no book ID was provided, just go back
-    header("Location: ../view/my_books.php");
-    exit();
+
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Database error']);
 }
 ?>

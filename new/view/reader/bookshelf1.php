@@ -220,7 +220,8 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <h2>Recommended Books</h2>
             <div class="books-grid">
                 <?php foreach ($books as $book): ?>
-                <div class="book-card">
+                <div class="book-card" data-id="<?= $book['id'] ?>">
+                    <button class="delete-btn" data-id="<?= $book['id'] ?>">×</button>
                     <img src="<?= htmlspecialchars($book['cover']) ?>" alt="<?= htmlspecialchars($book['title']) ?>">
                     <div class="book-info">
                         <h3><?= htmlspecialchars($book['title']) ?></h3>
@@ -229,6 +230,7 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                 </div>
                 <?php endforeach; ?>
+
             </div>
             <?php endif; ?>
 
@@ -283,6 +285,36 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
             });
     });
     </script>
+    <script>
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const bookId = this.dataset.id;
+
+            if (!confirm("Are you sure you want to delete this book?")) return;
+
+            fetch("../../controller/delete_book.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: `book_id=${bookId}`
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Book deleted successfully!");
+                        this.closest('.book-card').remove();
+                    } else {
+                        alert("Error deleting book: " + data.message);
+                    }
+                })
+                .catch(() => alert("Server error, please try again."));
+        });
+    });
+    </script>
+
+
+
 </body>
 
 </html>
