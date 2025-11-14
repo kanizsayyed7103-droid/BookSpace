@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare("INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, ?)");
         $stmt->execute([$user['user_id'], $token, $expiresAt]);
     } catch (PDOException $e) {
-        header("Location: ../forgotPassword.php?error=dberror" + $e->getMessage());
+        header("Location: ../forgotPassword.php?error=dberror" . $e->getMessage());
         exit();
     }
     // Build reset link (adjust domain)

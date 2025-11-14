@@ -256,7 +256,7 @@ $my_books = $stmt_my_books->fetchAll();
                                                                                 type="button" class="btn btn-success"><i
                                                                                     class="fas fa-pencil-alt"></i>
                                                                                 Edit</a>
-                                                                            <a href="../controller/delete_book.php?id=<?php echo $book['book_id']; ?>"
+                                                                            <a href="../controller/delete_author_book.php?id=<?php echo $book['book_id']; ?>"
                                                                                 type="button" class="btn btn-danger"
                                                                                 onclick="return confirm('Are you sure?');"><i
                                                                                     class="fas fa-trash-alt"></i>

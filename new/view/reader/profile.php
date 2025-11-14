@@ -160,6 +160,7 @@ $status = $_GET['status'] ?? '';
                         alt="Profile Image" class="profile-avatar">
                 </div>
 
+
                 <div class="mb-2">
                     <label class="form-label">Profile Picture</label>
                     <input type="file" name="profile_image" class="form-control" accept="image/*"

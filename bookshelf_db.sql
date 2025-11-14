@@ -10,7 +10,17 @@ CREATE TABLE bookshelf (
     cover VARCHAR(500) NOT NULL
 );
 
-INSERT INTO bookshelf (title, author, rating, cover) VALUES
-('The Kite Runner','Khaled Hosseini',4.8,'https://covers.openlibrary.org/b/id/8228691-L.jpg'),
-('Inferno','Dan Brown',4.2,'https://covers.openlibrary.org/b/id/10594740-L.jpg');
-
+INSERT INTO
+    bookshelf (title, author, rating, cover)
+VALUES (
+        'The Kite Runner',
+        'Khaled Hosseini',
+        4.8,
+        'https://covers.openlibrary.org/b/id/8228691-L.jpg'
+    ),
+    (
+        'Inferno',
+        'Dan Brown',
+        4.2,
+        'https://covers.openlibrary.org/b/id/10594740-L.jpg'
+    );

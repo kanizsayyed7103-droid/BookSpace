@@ -189,6 +189,18 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
             max-width: 100%;
         }
     }
+
+    .chat-header {
+        background: #392568ff;
+        color: #fff !important;
+        padding: 18px 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'Cinzel Decorative', cursive;
+        font-size: 1.2rem;
+        letter-spacing: 0.5px;
+    }
     </style>
 </head>
 
@@ -217,7 +229,7 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <?php endif; ?>
             <?php else: ?>
-            <h2>Recommended Books</h2>
+            <h2 class="chat-header">Your Reading Room</h2>
             <div class="books-grid">
                 <?php foreach ($books as $book): ?>
                 <div class="book-card" data-id="<?= $book['id'] ?>">
@@ -227,6 +239,7 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <h3><?= htmlspecialchars($book['title']) ?></h3>
                         <p><?= htmlspecialchars($book['author']) ?></p>
                         <p>⭐ <?= htmlspecialchars($book['rating']) ?></p>
+                        <a href="<?= htmlspecialchars($book['file_url']) ?>" class="btn btn-primary">View</a>
                     </div>
                 </div>
                 <?php endforeach; ?>
@@ -238,12 +251,12 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <!-- Right side (Form) -->
         <?php if ($role === 'reader'): ?>
-        <div class="add-book-form">
-            <h2>Add a New Book</h2>
+        <!-- <div class="add-book-form"> -->
+        <!-- <h2>Add a New Book</h2>
             <div class="cover-preview">
                 <img id="bookCover" src="https://via.placeholder.com/150x230?text=Preview" alt="Book cover preview">
             </div>
-            <form action="../../controller/db/add_book.php" method="POST" id="bookForm">
+            <form action="../../controller/db/add_bookshelf.php" method="POST" id="bookForm">
                 <input type="text" name="title" id="bookTitle" placeholder="Enter book title" required>
                 <input type="text" name="author" id="bookAuthor" placeholder="Author name" required>
                 <select name="rating" required>
@@ -255,63 +268,65 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <option value="3">3</option>
                 </select>
                 <input type="hidden" name="cover" id="coverUrl">
-                <button type="submit">Add Book</button>
-            </form>
-        </div>
-    </div>
-    <?php endif; ?>
+                <input type="hidden" name="flag" id="flag">
+                <button type="submit">Add Book</button> -->
+        <!-- </form>
+        </div> -->
+        <!-- </div> -->
+        <?php endif; ?>
 
 
-    <script>
-    document.getElementById('bookTitle')?.addEventListener('blur', function() {
-        const title = this.value.trim();
-        if (!title) return;
-        const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(title)}`;
-        fetch(apiUrl)
-            .then(res => res.json())
-            .then(data => {
-                if (data.items && data.items.length > 0) {
-                    const book = data.items[0].volumeInfo;
-                    const thumbnail = book.imageLinks ? book.imageLinks.thumbnail :
-                        "https://via.placeholder.com/150x230?text=No+Cover";
-                    const author = book.authors ? book.authors.join(', ') : "";
-                    document.getElementById('bookCover').src = thumbnail;
-                    document.getElementById('bookAuthor').value = author;
-                    document.getElementById('coverUrl').value = thumbnail;
-                }
-            })
-            .catch(() => {
-                document.getElementById('bookCover').src = "https://via.placeholder.com/150x230?text=Error";
-            });
-    });
-    </script>
-    <script>
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const bookId = this.dataset.id;
-
-            if (!confirm("Are you sure you want to delete this book?")) return;
-
-            fetch("../../controller/delete_book.php", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: `book_id=${bookId}`
-                })
+        <script>
+        document.getElementById('bookTitle')?.addEventListener('blur', function() {
+            const title = this.value.trim();
+            if (!title) return;
+            const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(title)}`;
+            fetch(apiUrl)
                 .then(res => res.json())
                 .then(data => {
-                    if (data.success) {
-                        alert("Book deleted successfully!");
-                        this.closest('.book-card').remove();
-                    } else {
-                        alert("Error deleting book: " + data.message);
+                    if (data.items && data.items.length > 0) {
+                        const book = data.items[0].volumeInfo;
+                        const thumbnail = book.imageLinks ? book.imageLinks.thumbnail :
+                            "https://via.placeholder.com/150x230?text=No+Cover";
+                        const author = book.authors ? book.authors.join(', ') : "";
+                        document.getElementById('bookCover').src = thumbnail;
+                        document.getElementById('bookAuthor').value = author;
+                        document.getElementById('coverUrl').value = thumbnail;
                     }
                 })
-                .catch(() => alert("Server error, please try again."));
+                .catch(() => {
+                    document.getElementById('bookCover').src =
+                        "https://via.placeholder.com/150x230?text=Error";
+                });
         });
-    });
-    </script>
+        </script>
+        <script>
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const bookId = this.dataset.id;
+
+                if (!confirm("Are you sure you want to delete this book?")) return;
+
+                fetch("../../controller/delete_book.php", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        body: `book_id=${bookId}`
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Book deleted successfully!");
+                            this.closest('.book-card').remove();
+                        } else {
+                            alert("Error deleting book: " + data.message);
+                        }
+                    })
+                    .catch(() => alert("Server error, please try again."));
+            });
+        });
+        </script>
 
 
 

@@ -18,6 +18,10 @@ if (isset($_SESSION['user_id'])) {
     $stmt_user->execute([$_SESSION['user_id']]);
     $user = $stmt_user->fetch();
     $username = $user['username'] ?? 'User';
+
+    $stmt_ratings = $pdo->prepare("SELECT * FROM ratings WHERE ratings.book_id = ? AND ratings.user_id = ?");
+    $stmt_ratings->execute([$book_id,$_SESSION['user_id']]);
+    $ratings = $stmt_ratings->fetch();
 }
 ?>
 <!DOCTYPE html>
@@ -32,6 +36,19 @@ if (isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="../../../asst/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+    .star-rating i {
+        font-size: 24px;
+        color: #ccc;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .star-rating i.hovered,
+    .star-rating i.active {
+        color: gold;
+    }
+    </style>
 </head>
 
 <body>
@@ -39,7 +56,7 @@ if (isset($_SESSION['user_id'])) {
         <?php include 'navbar.php'; ?>
 
         <main class="flex-grow-1 p-4 p-md-5">
-            <a href="authors_book.php" class="text-decoration-none mb-4 d-inline-block">&larr; Back to Authors Book</a>
+            <a href="reader_dashboard.php" class="text-decoration-none mb-4 d-inline-block">&larr; Back to Dashboard</a>
 
             <div class="card p-4 border-0 shadow-sm">
                 <div class="row g-4">
@@ -62,7 +79,7 @@ if (isset($_SESSION['user_id'])) {
                         <div class="d-flex flex-wrap gap-4 text-muted border-top border-bottom py-3 my-4">
                             <span><i class="fas fa-eye me-2"></i> <?php echo htmlspecialchars($book['views']); ?>
                                 Views</span>
-                            <span><i class="fas fa-star me-2"></i> <span
+                            <span><i class="fas fa-star me-2" style='color:#e4e407'></i> <span
                                     id="average-rating"><?php echo htmlspecialchars(number_format((float)($book['rating'] ?? 0), 2)); ?></span>
                                 Average Rating</span>
 
@@ -70,15 +87,16 @@ if (isset($_SESSION['user_id'])) {
                                 <?php echo date('M d, Y', strtotime($book['created_at'])); ?></span>
                         </div>
 
-                        <h2 class="h4" style="font-family: 'Lora', serif;">Synopsis</h2>
-                        <p style="white-space: pre-wrap;">
+                        <h2 class="h4" style="font-family: 'Lora', serif;">Description</h2>
+                        <p>
                             <?php echo htmlspecialchars($book['description'] ?? 'No synopsis has been provided for this book yet.'); ?>
                         </p>
 
                         <!-- Rating Feature (remains the same) -->
                         <div class="mt-4">
                             <h3 class="h5" style="font-family: 'Lora', serif;">Rate this Book</h3>
-                            <div class="star-rating" data-book-id="<?php echo $book['book_id']; ?>">
+                            <div class="star-rating" data-book-id="<?php echo $book['book_id']; ?>"
+                                data-user-rating="<?php echo $ratings['rating'] ?? 0; ?>">
                                 <i class="fas fa-star" data-value="1"></i>
                                 <i class="fas fa-star" data-value="2"></i>
                                 <i class="fas fa-star" data-value="3"></i>
@@ -153,6 +171,8 @@ if (isset($_SESSION['user_id'])) {
                         // SUCCESS: Permanently set the stars to the user's rating
                         setStars(rating);
                         // We DO NOT re-enable pointerEvents, this is now permanent.
+                        location.reload();
+
                     } else {
                         // Handle errors like "409 Conflict" (already rated)
                         feedbackEl.textContent = `Info: ${result.message}`;
@@ -172,6 +192,52 @@ if (isset($_SESSION['user_id'])) {
             stars.forEach(s => s.classList.remove('selected'));
         }
     });
+
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const ratingContainers = document.querySelectorAll('.star-rating');
+
+        ratingContainers.forEach(container => {
+            const stars = container.querySelectorAll('i');
+            const userRating = parseInt(container.dataset.userRating) || 0;
+
+            // 1️⃣ Pre-fill stars if user already rated
+            if (userRating > 0) {
+                highlightStars(stars, userRating);
+            }
+
+            // 2️⃣ Hover effect
+            stars.forEach(star => {
+                star.addEventListener('mouseover', () => {
+                    highlightStars(stars, star.dataset.value);
+                });
+
+                star.addEventListener('mouseout', () => {
+                    highlightStars(stars, userRating); // Reset to saved rating
+                });
+
+                // 3️⃣ Click (set rating)
+                star.addEventListener('click', () => {
+                    const rating = parseInt(star.dataset.value);
+                    highlightStars(stars, rating);
+                    container.dataset.userRating = rating; // Update locally
+                    document.getElementById('rating-feedback').textContent =
+                        `You rated this book ${rating} star${rating > 1 ? 's' : ''}.`;
+
+                    // Optional: send rating to server
+                    // saveRating(container.dataset.bookId, rating);
+                });
+            });
+        });
+
+        // Helper function: color up to the selected star
+        function highlightStars(stars, value) {
+            stars.forEach(star => {
+                star.classList.toggle('active', star.dataset.value <= value);
+            });
+        }
+    })
     </script>
 </body>
 

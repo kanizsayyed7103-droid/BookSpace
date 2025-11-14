@@ -47,9 +47,9 @@ try {
     ");
     $stmt_avg->execute([$book_id]);
     $new_stats = $stmt_avg->fetch();
-   
+   //echo'fgfg'.$new_stats['avg_rating']. "fgfff".$new_stats['rating_count'].$book_id;
     // Update the main 'books' table with the new average and count
-    $stmt_update_book = $pdo->prepare("UPDATE books SET rating = ?, rating_count = ? WHERE book_id = ?");
+    $stmt_update_book = $pdo->prepare("UPDATE books SET rating = ?, ratings_count = ? WHERE book_id = ?");
     $stmt_update_book->execute([$new_stats['avg_rating'], $new_stats['rating_count'], $book_id]);
 
     header('Content-Type: application/json');
@@ -57,6 +57,6 @@ try {
 
 } catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Database error']);
+    echo json_encode(['success' => false, 'message' => 'Database error'.$e]);
 }
 ?>
