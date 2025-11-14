@@ -237,7 +237,7 @@ include 'navbar.php';
         } else {
             chatBox.innerHTML = `
                     <div class="chat-message bot">
-                        <div class="bubble">👋 Hello, reader! I'm your BookSpace AI Assistant. Ask me for recommendations, summaries, or book details!</div>
+                        <div class="bubble">Hello, reader! I'm your BookSpace AI Assistant. Ask me for recommendations, summaries, or book details!</div>
                     </div>`;
         }
         chatBox.scrollTop = chatBox.scrollHeight;
