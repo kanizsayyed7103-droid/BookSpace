@@ -249,30 +249,7 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         </div>
 
-        <!-- Right side (Form) -->
         <?php if ($role === 'reader'): ?>
-        <!-- <div class="add-book-form"> -->
-        <!-- <h2>Add a New Book</h2>
-            <div class="cover-preview">
-                <img id="bookCover" src="https://via.placeholder.com/150x230?text=Preview" alt="Book cover preview">
-            </div>
-            <form action="../../controller/db/add_bookshelf.php" method="POST" id="bookForm">
-                <input type="text" name="title" id="bookTitle" placeholder="Enter book title" required>
-                <input type="text" name="author" id="bookAuthor" placeholder="Author name" required>
-                <select name="rating" required>
-                    <option value="" disabled selected>Rating</option>
-                    <option value="5">5</option>
-                    <option value="4.5">4.5</option>
-                    <option value="4">4</option>
-                    <option value="3.5">3.5</option>
-                    <option value="3">3</option>
-                </select>
-                <input type="hidden" name="cover" id="coverUrl">
-                <input type="hidden" name="flag" id="flag">
-                <button type="submit">Add Book</button> -->
-        <!-- </form>
-        </div> -->
-        <!-- </div> -->
         <?php endif; ?>
 
 

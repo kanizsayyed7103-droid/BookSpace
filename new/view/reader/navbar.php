@@ -177,8 +177,6 @@ $profile_image = !empty($user['profile_image'])
                     <li class="nav-item"><a href="/BookSpace_project/new/view/reader/reader_dashboard.php"
                             class="nav-link">Dashboard</a></li>
                     <li class="nav-item">
-                        <!-- <a href="/BookSpace_project/new/view/reader/bookshelf1.php" class="nav-link">Bookshelf</a> -->
-
                         <?php if (isset($_SESSION['user_id'])): ?>
                         <a href="/BookSpace_project/new/view/reader/bookshelf1.php" class="nav-link">Bookshelf</a>
                         <?php else: ?>
@@ -186,8 +184,7 @@ $profile_image = !empty($user['profile_image'])
                             class="nav-link">Bookshelf</a>
                         <?php endif; ?>
                     </li>
-                    <!-- <li class="nav-item"><a href="/BookSpace_project/new/view/reader/authors_book.php"
-                            class="nav-link">Authors Book</a> -->
+
                     </li>
                     <li class="nav-item"><a href="/BookSpace_project/new/view/reader/contact.php"
                             class="nav-link">Contact</a></li>
@@ -220,11 +217,6 @@ $profile_image = !empty($profile_image) && file_exists($_SERVER['DOCUMENT_ROOT']
     ? $user['profile_image']
     : '/BookSpace_project/default.jpg';
 ?>
-
-
-
-
-
 
                     <a href="/BookSpace_project/new/view/reader/profile.php" class="d-inline-block">
                         <img src="<?php echo htmlspecialchars($profile_image); ?>" alt="Profile" class="rounded-circle"

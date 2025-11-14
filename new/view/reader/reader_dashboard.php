@@ -347,28 +347,6 @@ if (!empty($data['items'])) {
 
 
 ?>
-
-        <!-- <div class="book-card">
-            <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1733931824i/221228045.jpg"
-                alt="Book Cover">
-            <div class="book-info">
-                <h3>A Study in Drowning #2 A Theory of Dreaming</h3>
-                <p>Ava Reid</p>
-                <div class="rating">⭐ 3.84</div>
-                <a href="#" class="btn">Summary</a>
-            </div>
-        </div>
-
-        <div class="book-card">
-            <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1541428344i/17165596.jpg"
-                alt="Book Cover">
-            <div class="book-info">
-                <h3>The Kite Runner</h3>
-                <p>Khaled Hosseini</p>
-                <div class="rating">⭐ 4.35</div>
-                <a href="#" class="btn">✨ AI Summary</a>
-            </div>
-        </div> -->
     </div>
 </body>
 
