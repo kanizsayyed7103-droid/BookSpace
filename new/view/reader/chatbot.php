@@ -316,7 +316,7 @@ include 'navbar.php';
         if (confirm("Do you really want to clear the chat history?")) {
             chatBox.innerHTML = `
                     <div class="chat-message bot">
-                        <div class="bubble">👋 Chat cleared! How can I assist you next?</div>
+                        <div class="bubble"> Chat cleared! How can I assist you next?</div>
                     </div>`;
             localStorage.removeItem("chatHistory");
         }
