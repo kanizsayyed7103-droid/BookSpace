@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
     // Build reset link (adjust domain)
-    $resetLink = "http://192.168.1.105/BookSpace_project/new/reset.php?token=" . urlencode($token);
+    $resetLink = "http://10.159.166.215/BookSpace_project/new/reset.php?token=" . urlencode($token);
 
     $mails = new PHPMailer(true);
 
@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['mailstatus'] = "send";
         header("Location: ../forgotPassword.php?mailstatus=send");
     } catch (Exception $e) {
-        // echo "❌ Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+        
         header("Location: ../forgotPassword.php?mailstatus = {$mail->ErrorInfo}");
     }
 
