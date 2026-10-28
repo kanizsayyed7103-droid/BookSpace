@@ -1,4 +1,5 @@
 BookSpace - Final Year Project
+
 A comprehensive, full-stack E-Book platform built with PHP and MySQL, featuring a dual-dashboard system for readers and authors, complete bookshelf management, and secure user handling. Developed collaboratively as our final year graduation project (45+ commits).
 
 Team & Contributions
